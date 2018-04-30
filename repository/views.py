@@ -1,6 +1,8 @@
 import datetime
 
-from github import Github
+from django.http import HttpResponseRedirect
+from github import Github, UnknownObjectException
+from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from social_django.models import UserSocialAuth
@@ -79,9 +81,12 @@ class RepositoryDataView(APIView):
             git_repo = self.kwargs.get('repository')
             fromdate = self.kwargs.get('fromdate', None)
 
-            commits = get_commits_data(token, git_user, git_repo, fromdate)
-
+            try:
+                commits = get_commits_data(token, git_user, git_repo, fromdate)
+            except UnknownObjectException as e:
+                raise NotFound('Repository not found')
             serializer = RepositoryDataSerializer(
                 instance=commits, many=True
             )
             return Response(serializer.data)
+        return HttpResponseRedirect(redirect_to='/')
