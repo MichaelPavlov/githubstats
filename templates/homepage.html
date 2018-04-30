@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Github Login</title>
+</head>
+<body>
+  {% block content %}
+    {% if user.is_authenticated %}
+      <p>Welcome <a href="{% url 'auth:logout' %}">{{user.username}}</a></p>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <p>Example of url "https://github.com/PyGithub/PyGithub"</p>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Sumbit"/>
+      </form>
+
+    {% else %}
+      <a href="{% url 'social:begin' 'github' %}?next={{request.path}}">Login with GitHub</a>
+    {% endif %}
+  {% endblock %}
+</body>
+</html>
